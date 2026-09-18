@@ -13,17 +13,9 @@ import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/lib/palette";
 import type { Category, TransactionType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useResponsiveModal } from "@/components/ui/responsive-modal";
 import { CategoryIcon } from "@/components/category-icon";
 
 const initialState: CategoryFormState = {};
@@ -60,6 +52,7 @@ export function CategoryDialog({
   const [icon, setIcon] = useState(category?.icon ?? "tag");
   const [state, formAction, isPending] = useActionState(action, initialState);
   const lastSavedAt = useRef(state.savedAt);
+  const Modal = useResponsiveModal();
 
   useEffect(() => {
     if (state.savedAt && state.savedAt !== lastSavedAt.current) {
@@ -70,18 +63,18 @@ export function CategoryDialog({
   }, [state.savedAt, isEditing, setOpen]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      {!isControlled && <DialogTrigger asChild>{trigger}</DialogTrigger>}
+    <Modal.Root open={open} onOpenChange={setOpen}>
+      {!isControlled && <Modal.Trigger asChild>{trigger}</Modal.Trigger>}
 
-      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>
+      <Modal.Content className="md:max-h-[92vh] md:max-w-md md:overflow-y-auto">
+        <Modal.Header>
+          <Modal.Title>
             {isEditing ? "Editar categoria" : "Nova categoria"}
-          </DialogTitle>
-          <DialogDescription>
+          </Modal.Title>
+          <Modal.Description>
             Escolha um nome, um ícone e uma cor para identificar a categoria.
-          </DialogDescription>
-        </DialogHeader>
+          </Modal.Description>
+        </Modal.Header>
 
         <form action={formAction} className="flex flex-col gap-5">
           <input type="hidden" name="type" value={type} />
@@ -201,7 +194,7 @@ export function CategoryDialog({
             </p>
           )}
 
-          <DialogFooter>
+          <Modal.Footer>
             <Button
               type="submit"
               variant="brand"
@@ -212,9 +205,9 @@ export function CategoryDialog({
               {isPending && <Loader2 className="animate-spin" />}
               {isEditing ? "Salvar alterações" : "Criar categoria"}
             </Button>
-          </DialogFooter>
+          </Modal.Footer>
         </form>
-      </DialogContent>
-    </Dialog>
+      </Modal.Content>
+    </Modal.Root>
   );
 }

@@ -17,17 +17,9 @@ import type {
 } from "@/lib/types";
 import { cn, todayKey } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useResponsiveModal } from "@/components/ui/responsive-modal";
 import { CategoryIcon } from "@/components/category-icon";
 
 const initialState: TransactionFormState = {};
@@ -63,6 +55,7 @@ export function TransactionDialog({
   );
   const [state, formAction, isPending] = useActionState(action, initialState);
   const lastSavedAt = useRef(state.savedAt);
+  const Modal = useResponsiveModal();
 
   useEffect(() => {
     if (state.savedAt && state.savedAt !== lastSavedAt.current) {
@@ -79,20 +72,20 @@ export function TransactionDialog({
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      {!isControlled && <DialogTrigger asChild>{trigger}</DialogTrigger>}
+    <Modal.Root open={open} onOpenChange={setOpen}>
+      {!isControlled && <Modal.Trigger asChild>{trigger}</Modal.Trigger>}
 
-      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>
+      <Modal.Content className="md:max-h-[92vh] md:max-w-md md:overflow-y-auto">
+        <Modal.Header>
+          <Modal.Title>
             {isEditing ? "Editar transação" : "Nova transação"}
-          </DialogTitle>
-          <DialogDescription>
+          </Modal.Title>
+          <Modal.Description>
             {isEditing
               ? "Atualize os dados desta transação."
               : "Registre uma receita ou despesa."}
-          </DialogDescription>
-        </DialogHeader>
+          </Modal.Description>
+        </Modal.Header>
 
         <form action={formAction} className="flex flex-col gap-5">
           <input type="hidden" name="type" value={type} />
@@ -225,7 +218,7 @@ export function TransactionDialog({
             </p>
           )}
 
-          <DialogFooter>
+          <Modal.Footer>
             <Button
               type="submit"
               variant="brand"
@@ -236,9 +229,9 @@ export function TransactionDialog({
               {isPending && <Loader2 className="animate-spin" />}
               {isEditing ? "Salvar alterações" : "Adicionar transação"}
             </Button>
-          </DialogFooter>
+          </Modal.Footer>
         </form>
-      </DialogContent>
-    </Dialog>
+      </Modal.Content>
+    </Modal.Root>
   );
 }
