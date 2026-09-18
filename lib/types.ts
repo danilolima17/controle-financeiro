@@ -6,6 +6,8 @@ export type Category = {
   name: string;
   type: TransactionType;
   color: string;
+  icon: string;
+  monthly_budget: number | null;
   created_at: string;
 };
 
@@ -21,5 +23,5 @@ export type Transaction = {
 };
 
 export type TransactionWithCategory = Transaction & {
-  category: Pick<Category, "id" | "name" | "color"> | null;
+  category: Pick<Category, "id" | "name" | "color" | "icon"> | null;
 };

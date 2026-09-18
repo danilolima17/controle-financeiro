@@ -1,6 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { ServiceWorkerRegistration } from "@/components/pwa/service-worker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,16 +18,46 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Controle Financeiro",
-  description: "Gerencie suas receitas e despesas em um só lugar.",
+  description:
+    "Controle suas receitas, despesas e orçamentos em um só lugar.",
+  applicationName: "Controle Financeiro",
+  appleWebApp: {
+    capable: true,
+    title: "Finanças",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f7f6fb" },
+    { media: "(prefers-color-scheme: dark)", color: "#171722" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
+      lang="pt-BR"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+          <ServiceWorkerRegistration />
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

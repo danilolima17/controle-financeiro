@@ -4,14 +4,21 @@ import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
 import type { TransactionType } from "@/lib/types";
+import { parseAmount } from "@/lib/utils";
 
 export type TransactionFormState = {
   error?: string;
+  savedAt?: number;
 };
+
+function revalidateAll() {
+  revalidatePath("/dashboard");
+  revalidatePath("/transacoes");
+  revalidatePath("/categorias");
+}
 
 function parseInput(formData: FormData) {
   const type = formData.get("type");
-  const amountRaw = String(formData.get("amount") ?? "").replace(",", ".");
   const description = String(formData.get("description") ?? "").trim();
   const occurredOn = String(formData.get("occurred_on") ?? "");
   const categoryId = formData.get("category_id");
@@ -20,8 +27,8 @@ function parseInput(formData: FormData) {
     return { error: "Selecione o tipo da transação." } as const;
   }
 
-  const amount = Number(amountRaw);
-  if (!amountRaw || Number.isNaN(amount) || amount <= 0) {
+  const amount = parseAmount(String(formData.get("amount") ?? ""));
+  if (!Number.isFinite(amount) || amount <= 0) {
     return { error: "Informe um valor válido maior que zero." } as const;
   }
 
@@ -62,10 +69,10 @@ export async function createTransaction(
     .from("transactions")
     .insert({ ...parsed.value, user_id: user.id });
 
-  if (error) return { error: "Não foi possível salvar a transação." };
+  if (error) return { error: error.message };
 
-  revalidatePath("/dashboard");
-  return {};
+  revalidateAll();
+  return { savedAt: Date.now() };
 }
 
 export async function updateTransaction(
@@ -88,10 +95,10 @@ export async function updateTransaction(
     .eq("id", id)
     .eq("user_id", user.id);
 
-  if (error) return { error: "Não foi possível atualizar a transação." };
+  if (error) return { error: error.message };
 
-  revalidatePath("/dashboard");
-  return {};
+  revalidateAll();
+  return { savedAt: Date.now() };
 }
 
 export async function deleteTransaction(id: string) {
@@ -107,5 +114,5 @@ export async function deleteTransaction(id: string) {
     .eq("id", id)
     .eq("user_id", user.id);
 
-  revalidatePath("/dashboard");
+  revalidateAll();
 }

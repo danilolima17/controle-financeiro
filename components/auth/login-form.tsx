@@ -15,10 +15,20 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
   const [state, formAction, isPending] = useActionState(login, initialState);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} className="flex flex-col gap-5">
+      <div>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Bem-vindo de volta
+        </h2>
+        <p className="text-muted-foreground mt-1 text-sm">
+          Entre para acompanhar suas finanças.
+        </p>
+      </div>
+
       {redirectTo && (
         <input type="hidden" name="redirectTo" value={redirectTo} />
       )}
+
       <div className="flex flex-col gap-2">
         <Label htmlFor="email">E-mail</Label>
         <Input
@@ -30,10 +40,9 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
           required
         />
       </div>
+
       <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password">Senha</Label>
-        </div>
+        <Label htmlFor="password">Senha</Label>
         <Input
           id="password"
           name="password"
@@ -44,19 +53,28 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
       </div>
 
       {state.error && (
-        <p className="text-destructive text-sm" role="alert">
+        <p
+          className="bg-destructive/10 text-destructive rounded-lg px-3 py-2 text-sm"
+          role="alert"
+        >
           {state.error}
         </p>
       )}
 
-      <Button type="submit" className="w-full" disabled={isPending}>
+      <Button
+        type="submit"
+        variant="brand"
+        size="lg"
+        className="w-full"
+        disabled={isPending}
+      >
         {isPending && <Loader2 className="animate-spin" />}
         Entrar
       </Button>
 
       <p className="text-muted-foreground text-center text-sm">
         Não tem uma conta?{" "}
-        <Link href="/signup" className="text-foreground underline">
+        <Link href="/signup" className="text-primary font-medium hover:underline">
           Cadastre-se
         </Link>
       </p>

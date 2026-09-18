@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
@@ -9,7 +10,38 @@ export type AuthState = {
   message?: string;
 };
 
-function getRedirectTarget(formData: FormData) {
+function friendlyError(message: string) {
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes("invalid login credentials")) {
+    return "E-mail ou senha inválidos.";
+  }
+  if (normalized.includes("email not confirmed")) {
+    return "Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada.";
+  }
+  if (normalized.includes("already registered")) {
+    return "Este e-mail já está cadastrado.";
+  }
+  if (normalized.includes("database error")) {
+    return "Erro no banco de dados ao criar o usuário. Rode o arquivo supabase/schema.sql no SQL Editor do seu projeto — ele remove o trigger antigo que causava esse erro.";
+  }
+  if (normalized.includes("invalid api key") || normalized.includes("no api key")) {
+    return "Chave do Supabase inválida. Confira NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY no .env.local.";
+  }
+  if (normalized.includes("fetch failed")) {
+    return "Não foi possível conectar ao Supabase. Confira a URL do projeto e sua conexão.";
+  }
+  return message;
+}
+
+async function origin() {
+  const headerList = await headers();
+  const host = headerList.get("x-forwarded-host") ?? headerList.get("host");
+  const protocol = headerList.get("x-forwarded-proto") ?? "http";
+  return `${protocol}://${host}`;
+}
+
+function safeRedirectTarget(formData: FormData) {
   const redirectTo = formData.get("redirectTo");
   if (typeof redirectTo === "string" && redirectTo.startsWith("/")) {
     return redirectTo;
@@ -29,16 +61,13 @@ export async function login(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return { error: "E-mail ou senha inválidos." };
+    return { error: friendlyError(error.message) };
   }
 
-  redirect(getRedirectTarget(formData));
+  redirect(safeRedirectTarget(formData));
 }
 
 export async function signup(
@@ -66,25 +95,22 @@ export async function signup(
     password,
     options: {
       data: { full_name: name },
+      emailRedirectTo: `${await origin()}/auth/confirm`,
     },
   });
 
   if (error) {
-    if (error.message.toLowerCase().includes("already registered")) {
-      return { error: "Este e-mail já está cadastrado." };
-    }
-    return { error: "Não foi possível criar a conta. Tente novamente." };
+    return { error: friendlyError(error.message) };
   }
 
-  // Se a confirmação por e-mail estiver desativada no projeto Supabase,
-  // signUp já retorna uma sessão e podemos ir direto ao dashboard.
+  // Projetos com confirmação de e-mail desativada já devolvem uma sessão.
   if (data.session) {
     redirect("/dashboard");
   }
 
   return {
     message:
-      "Conta criada! Verifique seu e-mail para confirmar o cadastro antes de entrar.",
+      "Conta criada! Enviamos um e-mail de confirmação — confirme o cadastro para entrar.",
   };
 }
 

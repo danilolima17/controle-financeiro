@@ -1,6 +1,7 @@
 -- Controle Financeiro — schema do Supabase
 -- Execute este arquivo no SQL Editor do seu projeto Supabase
 -- (https://supabase.com/dashboard/project/_/sql/new).
+-- O script é idempotente: pode ser executado novamente sem erros.
 
 -- ========== categories ==========
 create table if not exists public.categories (
@@ -8,26 +9,38 @@ create table if not exists public.categories (
   user_id uuid not null references auth.users (id) on delete cascade,
   name text not null,
   type text not null check (type in ('income', 'expense')),
-  color text not null default '#6366f1',
+  color text not null default '#2a78d6',
+  icon text not null default 'tag',
+  monthly_budget numeric(12, 2),
   created_at timestamptz not null default now(),
   unique (user_id, name, type)
 );
 
+-- Colunas adicionadas depois da primeira versão do schema.
+alter table public.categories
+  add column if not exists icon text not null default 'tag';
+alter table public.categories
+  add column if not exists monthly_budget numeric(12, 2);
+
 alter table public.categories enable row level security;
 
+drop policy if exists "Users can view their own categories" on public.categories;
 create policy "Users can view their own categories"
   on public.categories for select
   using (auth.uid() = user_id);
 
+drop policy if exists "Users can insert their own categories" on public.categories;
 create policy "Users can insert their own categories"
   on public.categories for insert
   with check (auth.uid() = user_id);
 
+drop policy if exists "Users can update their own categories" on public.categories;
 create policy "Users can update their own categories"
   on public.categories for update
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
+drop policy if exists "Users can delete their own categories" on public.categories;
 create policy "Users can delete their own categories"
   on public.categories for delete
   using (auth.uid() = user_id);
@@ -49,45 +62,31 @@ create index if not exists transactions_user_id_occurred_on_idx
 
 alter table public.transactions enable row level security;
 
+drop policy if exists "Users can view their own transactions" on public.transactions;
 create policy "Users can view their own transactions"
   on public.transactions for select
   using (auth.uid() = user_id);
 
+drop policy if exists "Users can insert their own transactions" on public.transactions;
 create policy "Users can insert their own transactions"
   on public.transactions for insert
   with check (auth.uid() = user_id);
 
+drop policy if exists "Users can update their own transactions" on public.transactions;
 create policy "Users can update their own transactions"
   on public.transactions for update
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
+drop policy if exists "Users can delete their own transactions" on public.transactions;
 create policy "Users can delete their own transactions"
   on public.transactions for delete
   using (auth.uid() = user_id);
 
--- ========== categorias padrão para novos usuários ==========
-create or replace function public.handle_new_user_default_categories()
-returns trigger
-language plpgsql
-security definer set search_path = public
-as $$
-begin
-  insert into public.categories (user_id, name, type, color) values
-    (new.id, 'Salário', 'income', '#22c55e'),
-    (new.id, 'Outras receitas', 'income', '#84cc16'),
-    (new.id, 'Alimentação', 'expense', '#f97316'),
-    (new.id, 'Moradia', 'expense', '#0ea5e9'),
-    (new.id, 'Transporte', 'expense', '#a855f7'),
-    (new.id, 'Saúde', 'expense', '#ef4444'),
-    (new.id, 'Lazer', 'expense', '#eab308'),
-    (new.id, 'Outras despesas', 'expense', '#64748b');
-  return new;
-end;
-$$;
-
+-- ========== limpeza de versões anteriores ==========
+-- A primeira versão deste schema criava categorias padrão por um trigger em
+-- auth.users. Qualquer falha ali derruba o cadastro inteiro com
+-- "Database error saving new user", então o app passou a criar as categorias
+-- padrão no primeiro acesso. Removemos o trigger caso ele exista.
 drop trigger if exists on_auth_user_created on auth.users;
-
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_user_default_categories();
+drop function if exists public.handle_new_user_default_categories();
