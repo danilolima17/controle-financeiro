@@ -81,15 +81,15 @@ export function TransactionFilters({
         )}
       </div>
 
-      <div className="flex gap-2">
-        <div className="bg-secondary flex flex-1 gap-1 rounded-xl p-1">
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="bg-secondary flex h-11 flex-1 gap-1 rounded-xl p-1">
           {TYPES.map((type) => (
             <button
               key={type.value}
               type="button"
               onClick={() => push({ tipo: type.value })}
               className={cn(
-                "flex-1 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors",
+                "flex-1 rounded-lg px-2 text-sm font-medium transition-colors",
                 currentType === type.value
                   ? "bg-background shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -104,7 +104,10 @@ export function TransactionFilters({
           value={currentCategory}
           onValueChange={(value) => push({ categoria: value })}
         >
-          <SelectTrigger className="w-40" aria-label="Filtrar por categoria">
+          <SelectTrigger
+            className="w-full sm:w-40"
+            aria-label="Filtrar por categoria"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

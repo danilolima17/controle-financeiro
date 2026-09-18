@@ -57,7 +57,7 @@ export function SignupForm() {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-5 sm:grid-cols-2 sm:gap-3">
         <div className="flex flex-col gap-2">
           <Label htmlFor="password">Senha</Label>
           <Input
