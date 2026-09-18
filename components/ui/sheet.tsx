@@ -44,14 +44,18 @@ function SheetOverlay({
   );
 }
 
+/**
+ * Folha que sobe pela base da tela. É o container de rolagem: o cabeçalho
+ * gruda no topo e o rodapé na base (ver SheetFooter), então o puxador e o
+ * botão principal nunca saem da tela, nem em aparelho baixo ou com o teclado
+ * aberto. `overscroll-contain` impede a rolagem de vazar para a página atrás.
+ */
 function SheetContent({
   className,
   children,
-  side = "bottom",
   showCloseButton = true,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
-  side?: "top" | "right" | "bottom" | "left";
   showCloseButton?: boolean;
 }) {
   return (
@@ -60,33 +64,25 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-xl transition ease-in-out data-[state=closed]:duration-200 data-[state=open]:duration-300",
-          side === "bottom" &&
-            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-2xl border-t p-6 pt-2 pb-[max(1.5rem,env(safe-area-inset-bottom))]",
-          side === "top" &&
-            "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 rounded-b-2xl border-b",
-          side === "right" &&
-            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
-          side === "left" &&
-            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom max-h-sheet fixed inset-x-0 bottom-0 z-50 flex flex-col gap-4 overflow-y-auto overscroll-contain rounded-t-2xl border-t px-5 pt-2 pb-0 shadow-xl transition ease-in-out data-[state=closed]:duration-200 data-[state=open]:duration-300",
           className
         )}
         {...props}
       >
-        {side === "bottom" && (
-          // Puxador: o mesmo affordance das folhas nativas do iOS e Android.
+        <div className="bg-background sticky top-0 z-20 -mx-5 -mt-2 px-5 pt-3 pb-2">
+          {/* Puxador: o mesmo affordance das folhas nativas. */}
           <div
             aria-hidden
-            className="bg-border mx-auto mt-3 h-1.5 w-10 shrink-0 rounded-full"
+            className="bg-border mx-auto h-1.5 w-10 rounded-full"
           />
-        )}
+          {showCloseButton && (
+            <SheetPrimitive.Close className="ring-offset-background focus:ring-ring absolute top-2.5 right-4 rounded-full p-1.5 opacity-60 transition-opacity hover:opacity-100 focus:ring-2 focus:outline-hidden">
+              <XIcon className="size-4" />
+              <span className="sr-only">Fechar</span>
+            </SheetPrimitive.Close>
+          )}
+        </div>
         {children}
-        {showCloseButton && (
-          <SheetPrimitive.Close className="ring-offset-background focus:ring-ring absolute top-4 right-4 rounded-xs opacity-60 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
-            <XIcon className="size-4" />
-            <span className="sr-only">Fechar</span>
-          </SheetPrimitive.Close>
-        )}
       </SheetPrimitive.Content>
     </SheetPortal>
   );
@@ -106,7 +102,12 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-footer"
-      className={cn("flex flex-col gap-2", className)}
+      className={cn(
+        // Gruda na base da folha: em tela curta (ou com o teclado aberto) o
+        // conteúdo rola por baixo e o botão continua acessível.
+        "bg-background sticky bottom-0 z-10 -mx-5 mt-1 flex flex-col gap-2 border-t px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]",
+        className
+      )}
       {...props}
     />
   );

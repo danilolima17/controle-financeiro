@@ -63,32 +63,30 @@ export default async function TransactionsPage({
         <TransactionFilters categories={categories} />
       </Suspense>
 
-      <div className="grid grid-cols-3 gap-2 text-center">
-        <Card className="gap-0 py-3">
-          <CardContent className="px-3">
+      {/* Um card só, com divisores: três cards separados não cabem lado a
+          lado numa tela de 320px sem cortar os valores. */}
+      <Card className="gap-0 py-3">
+        <CardContent className="grid grid-cols-3 divide-x px-0 text-center">
+          <div className="min-w-0 px-2">
             <p className="text-muted-foreground text-xs">Entradas</p>
-            <p className="tabular text-income text-sm font-semibold">
+            <p className="tabular text-income truncate text-sm font-semibold">
               {formatCurrency(income)}
             </p>
-          </CardContent>
-        </Card>
-        <Card className="gap-0 py-3">
-          <CardContent className="px-3">
+          </div>
+          <div className="min-w-0 px-2">
             <p className="text-muted-foreground text-xs">Saídas</p>
-            <p className="tabular text-expense text-sm font-semibold">
+            <p className="tabular text-expense truncate text-sm font-semibold">
               {formatCurrency(expense)}
             </p>
-          </CardContent>
-        </Card>
-        <Card className="gap-0 py-3">
-          <CardContent className="px-3">
+          </div>
+          <div className="min-w-0 px-2">
             <p className="text-muted-foreground text-xs">Saldo</p>
-            <p className="tabular text-sm font-semibold">
+            <p className="tabular truncate text-sm font-semibold">
               {formatCurrency(income - expense)}
             </p>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {transactions.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed py-14 text-center">

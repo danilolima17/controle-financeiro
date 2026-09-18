@@ -165,6 +165,13 @@
     color: transparent;
   }
 
+  /* Altura máxima da folha. `dvh` acompanha a barra do navegador que aparece
+     e some no celular; `vh` fica como reserva para navegadores sem suporte. */
+  .max-h-sheet {
+    max-height: 90vh;
+    max-height: 90dvh;
+  }
+
   /* Recortes de área segura para o visual de app instalado */
   .pt-safe {
     padding-top: env(safe-area-inset-top);

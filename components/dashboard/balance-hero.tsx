@@ -12,7 +12,7 @@ export function BalanceHero({
   expense: number;
 }) {
   return (
-    <section className="bg-brand-gradient shadow-primary/25 relative overflow-hidden rounded-2xl p-6 text-white shadow-xl">
+    <section className="bg-brand-gradient shadow-primary/25 relative overflow-hidden rounded-2xl p-5 text-white shadow-xl md:p-6">
       {/* Brilhos decorativos */}
       <div className="pointer-events-none absolute -top-16 -right-10 size-48 rounded-full bg-white/15 blur-2xl" />
       <div className="pointer-events-none absolute -bottom-20 -left-8 size-44 rounded-full bg-white/10 blur-2xl" />

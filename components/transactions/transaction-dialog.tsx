@@ -15,6 +15,7 @@ import type {
   TransactionType,
   TransactionWithCategory,
 } from "@/lib/types";
+import { useIsMobile } from "@/lib/use-media-query";
 import { cn, todayKey } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +57,7 @@ export function TransactionDialog({
   const [state, formAction, isPending] = useActionState(action, initialState);
   const lastSavedAt = useRef(state.savedAt);
   const Modal = useResponsiveModal();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (state.savedAt && state.savedAt !== lastSavedAt.current) {
@@ -135,7 +137,9 @@ export function TransactionDialog({
                 defaultValue={transaction?.amount}
                 className="tabular h-16 pl-12 text-2xl font-semibold"
                 required
-                autoFocus
+                // No celular o foco automático abriria o teclado por cima da
+                // folha antes da pessoa ver o formulário.
+                autoFocus={!isMobile}
               />
             </div>
           </div>

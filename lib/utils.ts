@@ -25,8 +25,9 @@ export function formatDate(value: string) {
   return dateFormatter.format(new Date(value));
 }
 
+// Sem o dia da semana: "quarta-feira, 16 de setembro" não cabe ao lado do
+// total do dia em telas estreitas.
 const dayFormatter = new Intl.DateTimeFormat("pt-BR", {
-  weekday: "long",
   day: "2-digit",
   month: "long",
   timeZone: "UTC",

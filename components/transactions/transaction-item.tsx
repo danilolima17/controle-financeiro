@@ -45,9 +45,9 @@ export function TransactionItem({
   const pair = colorPair(transaction.category?.color ?? "#2a78d6");
 
   return (
-    <li className="hover:bg-accent/50 flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors">
+    <li className="hover:bg-accent/50 flex items-center gap-2.5 rounded-xl px-1 py-2.5 transition-colors sm:gap-3 sm:px-2">
       <span
-        className="flex size-10 shrink-0 items-center justify-center rounded-xl text-white [background:var(--dot-light)] dark:[background:var(--dot-dark)]"
+        className="flex size-9 shrink-0 items-center justify-center rounded-xl text-white [background:var(--dot-light)] dark:[background:var(--dot-dark)] sm:size-10"
         style={
           {
             "--dot-light": pair.light,
@@ -57,7 +57,7 @@ export function TransactionItem({
       >
         <CategoryIcon
           name={transaction.category?.icon ?? "tag"}
-          className="size-[18px]"
+          className="size-4 sm:size-[18px]"
         />
       </span>
 
@@ -93,7 +93,7 @@ export function TransactionItem({
           <Button
             variant="ghost"
             size="icon-sm"
-            className="text-muted-foreground shrink-0"
+            className="text-muted-foreground size-7 shrink-0 sm:size-8"
           >
             <MoreVertical className="size-4" />
             <span className="sr-only">Ações da transação</span>
