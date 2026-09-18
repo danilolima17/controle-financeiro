@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Controle Financeiro
 
-## Getting Started
+App de controle financeiro pessoal construído com Next.js (App Router),
+[Supabase](https://supabase.com) (autenticação e banco de dados com Row Level
+Security) e [shadcn/ui](https://ui.shadcn.com) + Tailwind CSS v4.
 
-First, run the development server:
+## Funcionalidades
+
+- Cadastro/login por e-mail e senha (Supabase Auth), com confirmação por e-mail
+- Sessão protegida em todas as rotas via `proxy.ts` (renomeado de
+  `middleware.ts` no Next.js 16)
+- Dashboard com totais de receitas, despesas e saldo
+- CRUD de transações (receitas/despesas) com categoria, valor, descrição e data
+- CRUD de categorias, com categorias padrão criadas automaticamente no
+  cadastro do usuário
+
+## Configuração
+
+### 1. Criar um projeto no Supabase
+
+Crie um projeto em [supabase.com](https://supabase.com/dashboard) e, no
+**SQL Editor**, execute o conteúdo de [`supabase/schema.sql`](./supabase/schema.sql).
+Isso cria as tabelas `categories` e `transactions`, as policies de Row Level
+Security (cada usuário só acessa seus próprios dados) e um trigger que cria
+categorias padrão para cada novo usuário.
+
+### 2. Variáveis de ambiente
+
+Copie `.env.local.example` para `.env.local` e preencha com a URL e a chave
+pública (`anon`) do seu projeto, encontradas em **Project Settings > API**:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.local.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Rodar o projeto
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Abra [http://localhost:3000](http://localhost:3000). Você será redirecionado
+para `/login` até criar uma conta.
 
-## Learn More
+## Stack
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js 16](https://nextjs.org/docs) (App Router, Server Actions, Proxy)
+- [Supabase](https://supabase.com) (`@supabase/ssr`) para auth e Postgres
+- [shadcn/ui](https://ui.shadcn.com) (Radix UI + `class-variance-authority`)
+- [Tailwind CSS v4](https://tailwindcss.com)
