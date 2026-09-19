@@ -42,7 +42,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar email={user.email ?? ""} name={fullName} />
 
-        <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-6 pb-28 md:px-8 md:py-10 md:pb-14">
+        <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-6 pb-28 md:px-8 md:py-10 md:pb-14 xl:max-w-6xl">
           {children}
         </main>
       </div>

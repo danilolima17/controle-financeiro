@@ -129,23 +129,27 @@ export default async function DashboardPage({
 
       <BudgetHighlights categories={categories} slices={slices} />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Receitas e despesas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <MonthlyChart data={series} />
-        </CardContent>
-      </Card>
+      {/* Em tela larga os dois blocos de análise dividem a linha, em vez de
+          uma coluna esticada com muito espaço vazio dos lados. */}
+      <div className="grid gap-6 xl:grid-cols-2 xl:items-start">
+        <Card>
+          <CardHeader>
+            <CardTitle>Receitas e despesas</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <MonthlyChart data={series} />
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Gastos por categoria</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CategoryBreakdown slices={topSlices} />
-        </CardContent>
-      </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Gastos por categoria</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CategoryBreakdown slices={topSlices} />
+          </CardContent>
+        </Card>
+      </div>
 
       <Card>
         <CardHeader>
