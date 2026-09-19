@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Receipt } from "lucide-react";
 
 import { getCategories, getTransactions } from "@/lib/data/queries";
+import { createClient } from "@/lib/supabase/server";
 import type { TransactionWithCategory } from "@/lib/types";
 import {
   currentMonthKey,
@@ -19,7 +20,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { PageHeader } from "@/components/ui/page-header";
 import {
   CategoryBreakdown,
   type CategorySlice,
@@ -55,12 +55,21 @@ export default async function DashboardPage({
   const { from, to } = monthRange(monthKey);
   const chartStart = monthRange(shiftMonth(monthKey, -5)).from;
 
-  const [categories, monthTransactions, historyTransactions] =
+  const supabase = await createClient();
+  const [{ data: auth }, categories, monthTransactions, historyTransactions] =
     await Promise.all([
+      supabase.auth.getUser(),
       getCategories(),
       getTransactions({ from, to }),
       getTransactions({ from: chartStart, to }),
     ]);
+
+  const firstName =
+    ((auth.user?.user_metadata?.full_name as string | undefined) ??
+      auth.user?.email?.split("@")[0] ??
+      "")
+      .trim()
+      .split(" ")[0];
 
   const income = sumBy(monthTransactions, "income");
   const expense = sumBy(monthTransactions, "expense");
@@ -118,7 +127,16 @@ export default async function DashboardPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Início" />
+      <header>
+        <h1 className="text-[1.625rem] leading-9 font-bold tracking-tight">
+          Olá{firstName ? `, ${firstName}` : ""}
+        </h1>
+        <p className="text-muted-foreground mt-0.5 text-sm">
+          {income - expense >= 0
+            ? "Seu mês está no azul — siga assim."
+            : "As despesas passaram as receitas neste mês."}
+        </p>
+      </header>
 
       <BalanceSummary
         monthKey={monthKey}

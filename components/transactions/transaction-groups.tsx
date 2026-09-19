@@ -37,7 +37,7 @@ export function TransactionGroups({
               </span>
             </div>
 
-            <ul className="bg-card flex flex-col rounded-lg border p-1">
+            <ul className="bg-card shadow-soft flex flex-col rounded-lg border p-1">
               {items.map((transaction) => (
                 <TransactionItem
                   key={transaction.id}

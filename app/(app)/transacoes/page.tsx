@@ -73,14 +73,14 @@ export default async function TransactionsPage({
       </Suspense>
 
       {/* Um card só com divisores: três cards lado a lado não cabem em 320px. */}
-      <div className="bg-card grid grid-cols-3 divide-x rounded-lg border">
+      <div className="bg-card shadow-soft grid grid-cols-3 divide-x rounded-lg border">
         <Figure label="Entradas" value={income} tone="income" />
         <Figure label="Saídas" value={expense} tone="expense" />
         <Figure label="Saldo" value={income - expense} />
       </div>
 
       {transactions.length === 0 ? (
-        <div className="bg-card rounded-lg border">
+        <div className="bg-card shadow-soft rounded-lg border">
           {isFiltered ? (
             <EmptyState
               icon={SearchX}

@@ -35,7 +35,7 @@ export default async function SettingsPage() {
     <div className="flex flex-col gap-6">
       <PageHeader title="Ajustes" />
 
-      <section className="bg-card rounded-lg border">
+      <section className="bg-card shadow-soft rounded-lg border">
         <div className="flex items-center gap-3.5 px-4 py-4">
           <Avatar className="size-12">
             <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
@@ -71,7 +71,7 @@ export default async function SettingsPage() {
 
       <section className="flex flex-col gap-2.5">
         <SectionHeader title="Aplicativo" />
-        <div className="bg-card rounded-lg border px-4 py-4">
+        <div className="bg-card shadow-soft rounded-lg border px-4 py-4">
           <div className="flex items-start gap-3">
             <span className="bg-surface-sunken text-muted-foreground mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full">
               <Smartphone className="size-[17px]" />

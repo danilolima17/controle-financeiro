@@ -73,7 +73,7 @@ export default async function CategoriesPage() {
           />
 
           {group.items.length === 0 ? (
-            <div className="bg-card rounded-lg border">
+            <div className="bg-card shadow-soft rounded-lg border">
               <EmptyState
                 icon={Shapes}
                 title={`Nenhuma categoria de ${group.title.toLowerCase()}`}
@@ -82,7 +82,7 @@ export default async function CategoriesPage() {
               />
             </div>
           ) : (
-            <ul className="bg-card divide-border divide-y overflow-hidden rounded-lg border">
+            <ul className="bg-card shadow-soft divide-border divide-y overflow-hidden rounded-lg border">
               {group.items.map((category) => (
                 <CategoryRow
                   key={category.id}

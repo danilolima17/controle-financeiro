@@ -21,10 +21,10 @@ export function BottomNav({ categories }: { categories: Category[] }) {
         href={entry.href}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "flex flex-1 flex-col items-center justify-center gap-1 pt-2.5 pb-1.5 text-[0.6875rem] transition-colors duration-150",
+          "flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-2.5 text-[0.6875rem] transition-colors duration-150",
           active
-            ? "text-primary font-medium"
-            : "text-faint-foreground font-normal"
+            ? "text-primary font-semibold"
+            : "text-faint-foreground font-medium"
         )}
       >
         <entry.icon className="size-[19px]" strokeWidth={active ? 2.25 : 1.75} />
@@ -34,27 +34,31 @@ export function BottomNav({ categories }: { categories: Category[] }) {
   };
 
   return (
-    <nav className="bg-card/90 pb-safe fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t backdrop-blur-xl md:hidden">
-      {item(first)}
-      {item(second)}
+    // Ilha flutuante em vez de barra colada na borda: o app ganha ar embaixo
+    // e o botão de ação se destaca acima dela.
+    <nav className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden">
+      <div className="bg-card/85 shadow-float flex items-stretch rounded-2xl border px-1 backdrop-blur-xl">
+        {item(first)}
+        {item(second)}
 
-      <div className="relative w-16 shrink-0">
-        <TransactionDialog
-          categories={categories}
-          trigger={
-            <button
-              type="button"
-              aria-label="Nova transação"
-              className="bg-primary text-primary-foreground shadow-primary/20 hover:bg-primary-hover absolute -top-5 left-1/2 flex size-13 -translate-x-1/2 items-center justify-center rounded-full shadow-lg transition-transform duration-150 active:scale-95"
-            >
-              <Plus className="size-6" />
-            </button>
-          }
-        />
+        <div className="relative w-14 shrink-0">
+          <TransactionDialog
+            categories={categories}
+            trigger={
+              <button
+                type="button"
+                aria-label="Nova transação"
+                className="bg-primary text-primary-foreground shadow-primary/25 hover:bg-primary-hover absolute -top-6 left-1/2 flex size-14 -translate-x-1/2 items-center justify-center rounded-full shadow-lg transition-transform duration-150 active:scale-95"
+              >
+                <Plus className="size-6" strokeWidth={2.5} />
+              </button>
+            }
+          />
+        </div>
+
+        {item(third)}
+        {item(fourth)}
       </div>
-
-      {item(third)}
-      {item(fourth)}
     </nav>
   );
 }
