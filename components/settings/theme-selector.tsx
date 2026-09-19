@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { Monitor, Moon, Sun } from "lucide-react";
 
 import { useMounted } from "@/lib/use-mounted";
-import { cn } from "@/lib/utils";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 
 const OPTIONS = [
   { value: "light", label: "Claro", icon: Sun },
@@ -17,24 +17,13 @@ export function ThemeSelector() {
   const mounted = useMounted();
 
   return (
-    <div className="bg-secondary grid grid-cols-3 gap-1 rounded-xl p-1">
-      {OPTIONS.map((option) => (
-        <button
-          key={option.value}
-          type="button"
-          onClick={() => setTheme(option.value)}
-          aria-pressed={mounted && theme === option.value}
-          className={cn(
-            "flex flex-col items-center gap-1.5 rounded-lg px-2 py-3 text-xs font-medium transition-all",
-            mounted && theme === option.value
-              ? "bg-background shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          <option.icon className="size-4" />
-          {option.label}
-        </button>
-      ))}
-    </div>
+    <SegmentedControl
+      size="lg"
+      aria-label="Tema do aplicativo"
+      options={OPTIONS}
+      // Antes de hidratar não sabemos o tema; "system" é o padrão do provider.
+      value={mounted ? ((theme ?? "system") as "light" | "dark" | "system") : "system"}
+      onValueChange={setTheme}
+    />
   );
 }

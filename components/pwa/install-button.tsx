@@ -80,9 +80,7 @@ export function InstallButton() {
       }}
     >
       <Download />
-      {prompt
-        ? "Instalar aplicativo"
-        : "Abra pelo navegador do celular para instalar"}
+      {prompt ? "Instalar aplicativo" : "Indisponível neste navegador"}
     </Button>
   );
 }

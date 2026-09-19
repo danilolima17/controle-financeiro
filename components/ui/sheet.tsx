@@ -63,6 +63,13 @@ function SheetContent({
       <SheetOverlay />
       <SheetPrimitive.Content
         data-slot="sheet-content"
+        // Sem isto o Radix foca o primeiro elemento tabulável — o botão de
+        // fechar — e a folha abre com um anel de foco em volta do X. O foco
+        // vai para o contêiner, que continua dentro da folha.
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          (event.currentTarget as HTMLElement | null)?.focus();
+        }}
         className={cn(
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom max-h-sheet fixed inset-x-0 bottom-0 z-50 flex flex-col gap-4 overflow-y-auto overscroll-contain rounded-t-2xl border-t px-5 pt-2 pb-0 shadow-xl transition ease-in-out data-[state=closed]:duration-200 data-[state=open]:duration-300",
           className

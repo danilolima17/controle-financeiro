@@ -5,7 +5,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 
 import type { Category } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -14,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 
 const TYPES = [
   { value: "todos", label: "Tudo" },
@@ -21,11 +21,7 @@ const TYPES = [
   { value: "expense", label: "Despesas" },
 ] as const;
 
-export function TransactionFilters({
-  categories,
-}: {
-  categories: Category[];
-}) {
+export function TransactionFilters({ categories }: { categories: Category[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -59,14 +55,14 @@ export function TransactionFilters({
   }, [term]);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       <div className="relative">
-        <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+        <Search className="text-faint-foreground pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2" />
         <Input
           value={term}
           onChange={(event) => setTerm(event.target.value)}
           placeholder="Buscar por descrição"
-          className="pr-9 pl-9"
+          className="pr-10 pl-10"
           aria-label="Buscar transações"
         />
         {term && (
@@ -74,38 +70,29 @@ export function TransactionFilters({
             type="button"
             onClick={() => setTerm("")}
             aria-label="Limpar busca"
-            className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
+            className="text-faint-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 rounded-sm transition-colors"
           >
             <X className="size-4" />
           </button>
         )}
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <div className="bg-secondary flex h-11 flex-1 gap-1 rounded-xl p-1">
-          {TYPES.map((type) => (
-            <button
-              key={type.value}
-              type="button"
-              onClick={() => push({ tipo: type.value })}
-              className={cn(
-                "flex-1 rounded-lg px-2 text-sm font-medium transition-colors",
-                currentType === type.value
-                  ? "bg-background shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {type.label}
-            </button>
-          ))}
-        </div>
+      <div className="flex flex-col gap-2.5 sm:flex-row">
+        <SegmentedControl
+          className="flex-1"
+          size="lg"
+          aria-label="Filtrar por tipo"
+          options={TYPES}
+          value={currentType as (typeof TYPES)[number]["value"]}
+          onValueChange={(value) => push({ tipo: value })}
+        />
 
         <Select
           value={currentCategory}
           onValueChange={(value) => push({ categoria: value })}
         >
           <SelectTrigger
-            className="w-full sm:w-40"
+            className="w-full shrink-0 sm:w-44"
             aria-label="Filtrar por categoria"
           >
             <SelectValue />

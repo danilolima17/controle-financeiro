@@ -16,9 +16,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useResponsiveModal } from "@/components/ui/responsive-modal";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CategoryIcon } from "@/components/category-icon";
 
 const initialState: CategoryFormState = {};
+
+const TYPE_OPTIONS = [
+  { value: "expense", label: "Despesa" },
+  { value: "income", label: "Receita" },
+] as const;
 
 export function CategoryDialog({
   category,
@@ -62,6 +68,10 @@ export function CategoryDialog({
     }
   }, [state.savedAt, isEditing, setOpen]);
 
+  const selectedPair =
+    CATEGORY_COLORS.find((option) => option.light === color) ??
+    CATEGORY_COLORS[0];
+
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       {!isControlled && <Modal.Trigger asChild>{trigger}</Modal.Trigger>}
@@ -81,29 +91,31 @@ export function CategoryDialog({
           <input type="hidden" name="color" value={color} />
           <input type="hidden" name="icon" value={icon} />
 
-          <div className="bg-secondary grid grid-cols-2 gap-1 rounded-xl p-1">
-            {(
-              [
-                { value: "expense", label: "Despesa" },
-                { value: "income", label: "Receita" },
-              ] as const
-            ).map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setType(option.value)}
-                className={cn(
-                  "rounded-lg px-3 py-2 text-sm font-medium transition-all",
-                  type === option.value
-                    ? option.value === "income"
-                      ? "bg-income text-white shadow-sm"
-                      : "bg-expense text-white shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {option.label}
-              </button>
-            ))}
+          <SegmentedControl
+            size="lg"
+            tone="financial"
+            aria-label="Tipo da categoria"
+            options={TYPE_OPTIONS}
+            value={type}
+            onValueChange={setType}
+          />
+
+          {/* Prévia: mostra o resultado das escolhas abaixo. */}
+          <div className="bg-surface-sunken flex items-center gap-3 rounded-lg px-3.5 py-3">
+            <span
+              className="flex size-10 shrink-0 items-center justify-center rounded-full [background:color-mix(in_oklab,var(--dot)_14%,transparent)] [color:var(--dot)] dark:[background:color-mix(in_oklab,var(--dot-dark)_24%,transparent)] dark:[color:var(--dot-dark)]"
+              style={
+                {
+                  "--dot": selectedPair.light,
+                  "--dot-dark": selectedPair.dark,
+                } as React.CSSProperties
+              }
+            >
+              <CategoryIcon name={icon} className="size-[18px]" />
+            </span>
+            <p className="text-muted-foreground text-[0.8125rem]">
+              Prévia da categoria
+            </p>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -121,12 +133,12 @@ export function CategoryDialog({
             <div className="flex flex-col gap-2">
               <Label htmlFor="monthly_budget">
                 Orçamento mensal{" "}
-                <span className="text-muted-foreground font-normal">
-                  (opcional)
+                <span className="text-faint-foreground font-normal">
+                  opcional
                 </span>
               </Label>
               <div className="relative">
-                <span className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2 text-sm">
+                <span className="text-muted-foreground absolute top-1/2 left-3.5 -translate-y-1/2 text-sm">
                   R$
                 </span>
                 <Input
@@ -135,13 +147,13 @@ export function CategoryDialog({
                   inputMode="decimal"
                   placeholder="0,00"
                   defaultValue={category?.monthly_budget ?? ""}
-                  className="tabular pl-9"
+                  className="numeric pl-10"
                 />
               </div>
             </div>
           )}
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5">
             <Label>Cor</Label>
             <div className="flex flex-wrap gap-2">
               {CATEGORY_COLORS.map((option) => (
@@ -151,7 +163,7 @@ export function CategoryDialog({
                   onClick={() => setColor(option.light)}
                   aria-label={`Cor ${option.name}`}
                   aria-pressed={color === option.light}
-                  className="flex size-9 items-center justify-center rounded-full text-white transition-transform active:scale-90 [background:var(--sw-light)] dark:[background:var(--sw-dark)]"
+                  className="flex size-8 items-center justify-center rounded-full text-white transition-transform duration-150 active:scale-90 [background:var(--sw-light)] dark:[background:var(--sw-dark)]"
                   style={
                     {
                       "--sw-light": option.light,
@@ -165,7 +177,7 @@ export function CategoryDialog({
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5">
             <Label>Ícone</Label>
             <div className="flex flex-wrap gap-2">
               {CATEGORY_ICONS.map((option) => (
@@ -176,10 +188,10 @@ export function CategoryDialog({
                   aria-label={`Ícone ${option}`}
                   aria-pressed={icon === option}
                   className={cn(
-                    "flex size-9 items-center justify-center rounded-xl border transition-colors",
+                    "flex size-9 items-center justify-center rounded-md border transition-colors duration-150",
                     icon === option
-                      ? "border-primary bg-accent text-primary"
-                      : "text-muted-foreground hover:bg-accent"
+                      ? "border-primary text-primary bg-accent"
+                      : "border-border text-muted-foreground hover:bg-secondary"
                   )}
                 >
                   <CategoryIcon name={option} className="size-4" />
@@ -189,7 +201,10 @@ export function CategoryDialog({
           </div>
 
           {state.error && (
-            <p className="text-destructive text-sm" role="alert">
+            <p
+              className="bg-destructive/10 text-destructive rounded-md px-3 py-2 text-sm"
+              role="alert"
+            >
               {state.error}
             </p>
           )}
@@ -197,7 +212,6 @@ export function CategoryDialog({
           <Modal.Footer>
             <Button
               type="submit"
-              variant="brand"
               size="lg"
               className="w-full"
               disabled={isPending}

@@ -6,15 +6,10 @@ import { getCategories, getTransactions } from "@/lib/data/queries";
 import { createClient } from "@/lib/supabase/server";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { PageHeader, SectionHeader } from "@/components/ui/page-header";
 import { InstallButton } from "@/components/pwa/install-button";
 import { ThemeSelector } from "@/components/settings/theme-selector";
+import { initialsOf } from "@/components/shell/user-menu";
 
 export const metadata: Metadata = {
   title: "Ajustes — Controle Financeiro",
@@ -32,76 +27,73 @@ export default async function SettingsPage() {
   ]);
 
   const email = user?.email ?? "";
-  const name = (user?.user_metadata?.full_name as string | undefined) ?? email;
+  const name =
+    (user?.user_metadata?.full_name as string | undefined)?.trim() ||
+    email.split("@")[0];
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Ajustes</h1>
+      <PageHeader title="Ajustes" />
 
-      <Card>
-        <CardContent className="flex items-center gap-4">
-          <Avatar className="size-14">
-            <AvatarFallback className="bg-brand-gradient text-lg font-semibold text-white">
-              {(name || email).slice(0, 2).toUpperCase()}
+      <section className="bg-card rounded-lg border">
+        <div className="flex items-center gap-3.5 px-4 py-4">
+          <Avatar className="size-12">
+            <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
+              {initialsOf(name || email)}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
             <p className="truncate font-medium">{name}</p>
             <p className="text-muted-foreground truncate text-sm">{email}</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Card className="gap-1 py-4">
-          <CardContent>
-            <p className="text-2xl font-semibold">{transactions.length}</p>
-            <p className="text-muted-foreground text-xs">
-              transações registradas
+        <div className="grid grid-cols-2 divide-x border-t">
+          <div className="px-4 py-3">
+            <p className="numeric text-lg font-semibold">
+              {transactions.length}
             </p>
-          </CardContent>
-        </Card>
-        <Card className="gap-1 py-4">
-          <CardContent>
-            <p className="text-2xl font-semibold">{categories.length}</p>
-            <p className="text-muted-foreground text-xs">categorias</p>
-          </CardContent>
-        </Card>
-      </div>
+            <p className="text-muted-foreground text-[0.8125rem]">
+              transações
+            </p>
+          </div>
+          <div className="px-4 py-3">
+            <p className="numeric text-lg font-semibold">{categories.length}</p>
+            <p className="text-muted-foreground text-[0.8125rem]">categorias</p>
+          </div>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Aparência</CardTitle>
-          <CardDescription>
-            Escolha o tema do app ou acompanhe o do sistema.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ThemeSelector />
-        </CardContent>
-      </Card>
+      <section className="flex flex-col gap-2.5">
+        <SectionHeader title="Aparência" />
+        <ThemeSelector />
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Smartphone className="size-4" />
-            Instalar no celular
-          </CardTitle>
-          <CardDescription>
-            Instale o Controle Financeiro para abrir em tela cheia, como um app
-            nativo.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <InstallButton />
-        </CardContent>
-      </Card>
+      <section className="flex flex-col gap-2.5">
+        <SectionHeader title="Aplicativo" />
+        <div className="bg-card rounded-lg border px-4 py-4">
+          <div className="flex items-start gap-3">
+            <span className="bg-surface-sunken text-muted-foreground mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full">
+              <Smartphone className="size-[17px]" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium">Instalar no celular</p>
+              <p className="text-muted-foreground mt-0.5 text-[0.8125rem]">
+                Abra em tela cheia, como um aplicativo nativo.
+              </p>
+              <div className="mt-3">
+                <InstallButton />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <form action={logout}>
         <Button
           type="submit"
           variant="outline"
-          className="text-destructive hover:text-destructive w-full"
+          className="text-destructive hover:text-destructive hover:bg-destructive/5 w-full"
         >
           <LogOut />
           Sair da conta

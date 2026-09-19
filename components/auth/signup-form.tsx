@@ -17,8 +17,8 @@ export function SignupForm() {
   if (state.message) {
     return (
       <div className="flex flex-col items-center gap-4 text-center">
-        <span className="bg-income/10 text-income flex size-14 items-center justify-center rounded-2xl">
-          <MailCheck className="size-6" />
+        <span className="bg-income-surface text-income flex size-12 items-center justify-center rounded-full">
+          <MailCheck className="size-5" />
         </span>
         <div>
           <h2 className="text-xl font-semibold">Confirme seu e-mail</h2>
@@ -33,9 +33,11 @@ export function SignupForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight">Criar conta</h2>
-        <p className="text-muted-foreground mt-1 text-sm">
+      <div className="mb-1">
+        <h2 className="text-[1.625rem] leading-9 font-semibold tracking-tight">
+          Criar conta
+        </h2>
+        <p className="text-muted-foreground mt-1.5 text-sm">
           Leva menos de um minuto.
         </p>
       </div>
@@ -82,20 +84,14 @@ export function SignupForm() {
 
       {state.error && (
         <p
-          className="bg-destructive/10 text-destructive rounded-lg px-3 py-2 text-sm"
+          className="bg-destructive/10 text-destructive rounded-md px-3 py-2 text-sm"
           role="alert"
         >
           {state.error}
         </p>
       )}
 
-      <Button
-        type="submit"
-        variant="brand"
-        size="lg"
-        className="w-full"
-        disabled={isPending}
-      >
+      <Button type="submit" size="lg" className="w-full" disabled={isPending}>
         {isPending && <Loader2 className="animate-spin" />}
         Criar conta
       </Button>

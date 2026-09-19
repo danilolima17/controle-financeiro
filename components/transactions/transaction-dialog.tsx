@@ -21,9 +21,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useResponsiveModal } from "@/components/ui/responsive-modal";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CategoryIcon } from "@/components/category-icon";
 
 const initialState: TransactionFormState = {};
+
+const TYPE_OPTIONS = [
+  { value: "expense", label: "Despesa" },
+  { value: "income", label: "Receita" },
+] as const;
 
 export function TransactionDialog({
   categories,
@@ -93,40 +99,22 @@ export function TransactionDialog({
           <input type="hidden" name="type" value={type} />
           <input type="hidden" name="category_id" value={categoryId} />
 
-          {/* Seletor de tipo */}
-          <div className="bg-secondary grid grid-cols-2 gap-1 rounded-xl p-1">
-            {(
-              [
-                { value: "expense", label: "Despesa" },
-                { value: "income", label: "Receita" },
-              ] as const
-            ).map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => {
-                  setType(option.value);
-                  setCategoryId("");
-                }}
-                className={cn(
-                  "rounded-lg px-3 py-2 text-sm font-medium transition-all",
-                  type === option.value
-                    ? option.value === "income"
-                      ? "bg-income text-white shadow-sm"
-                      : "bg-expense text-white shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
+          <SegmentedControl
+            size="lg"
+            tone="financial"
+            aria-label="Tipo da transação"
+            options={TYPE_OPTIONS}
+            value={type}
+            onValueChange={(value) => {
+              setType(value);
+              setCategoryId("");
+            }}
+          />
 
-          {/* Valor */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="amount">Valor</Label>
             <div className="relative">
-              <span className="text-muted-foreground absolute top-1/2 left-4 -translate-y-1/2 text-lg font-medium">
+              <span className="text-muted-foreground absolute top-1/2 left-4 -translate-y-1/2 font-medium">
                 R$
               </span>
               <Input
@@ -135,7 +123,7 @@ export function TransactionDialog({
                 inputMode="decimal"
                 placeholder="0,00"
                 defaultValue={transaction?.amount}
-                className="tabular h-16 pl-12 text-2xl font-semibold"
+                className="numeric h-15 pl-12 text-[1.625rem] font-semibold"
                 required
                 // No celular o foco automático abriria o teclado por cima da
                 // folha antes da pessoa ver o formulário.
@@ -167,57 +155,56 @@ export function TransactionDialog({
             </div>
           </div>
 
-          {/* Categorias como chips */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5">
             <Label>Categoria</Label>
-            <div className="flex flex-wrap gap-2">
-              {visibleCategories.map((category) => {
-                const pair = colorPair(category.color);
-                const selected = categoryId === category.id;
-                return (
-                  <button
-                    key={category.id}
-                    type="button"
-                    onClick={() =>
-                      setCategoryId(selected ? "" : category.id)
-                    }
-                    aria-pressed={selected}
-                    className={cn(
-                      "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all",
-                      selected
-                        ? "border-transparent text-white [background:var(--chip-light)] dark:[background:var(--chip-dark)]"
-                        : "hover:bg-accent"
-                    )}
-                    style={
-                      {
-                        "--chip-light": pair.light,
-                        "--chip-dark": pair.dark,
-                      } as React.CSSProperties
-                    }
-                  >
-                    <CategoryIcon
-                      name={category.icon}
+            {visibleCategories.length === 0 ? (
+              <p className="text-muted-foreground text-sm">
+                Nenhuma categoria de{" "}
+                {type === "income" ? "receita" : "despesa"} cadastrada.
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {visibleCategories.map((category) => {
+                  const pair = colorPair(category.color);
+                  const selected = categoryId === category.id;
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() =>
+                        setCategoryId(selected ? "" : category.id)
+                      }
+                      aria-pressed={selected}
+                      style={
+                        {
+                          "--dot": pair.light,
+                          "--dot-dark": pair.dark,
+                        } as React.CSSProperties
+                      }
                       className={cn(
-                        "size-3.5",
-                        !selected &&
-                          "[color:var(--chip-light)] dark:[color:var(--chip-dark)]"
+                        "flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[0.8125rem] font-medium transition-colors duration-150",
+                        selected
+                          ? "border-transparent [background:color-mix(in_oklab,var(--dot)_14%,transparent)] [color:var(--dot)] dark:[background:color-mix(in_oklab,var(--dot-dark)_26%,transparent)] dark:[color:var(--dot-dark)]"
+                          : "border-border text-muted-foreground hover:bg-secondary"
                       )}
-                    />
-                    {category.name}
-                  </button>
-                );
-              })}
-              {visibleCategories.length === 0 && (
-                <p className="text-muted-foreground text-sm">
-                  Nenhuma categoria de {type === "income" ? "receita" : "despesa"}.
-                  Crie uma na aba Categorias.
-                </p>
-              )}
-            </div>
+                    >
+                      <CategoryIcon
+                        name={category.icon}
+                        className="size-3.5 [color:var(--dot)] dark:[color:var(--dot-dark)]"
+                      />
+                      {category.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {state.error && (
-            <p className="text-destructive text-sm" role="alert">
+            <p
+              className="bg-destructive/10 text-destructive rounded-md px-3 py-2 text-sm"
+              role="alert"
+            >
               {state.error}
             </p>
           )}
@@ -225,7 +212,6 @@ export function TransactionDialog({
           <Modal.Footer>
             <Button
               type="submit"
-              variant="brand"
               size="lg"
               className="w-full"
               disabled={isPending}

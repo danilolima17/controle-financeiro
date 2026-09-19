@@ -16,11 +16,11 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight">
+      <div className="mb-1">
+        <h2 className="text-[1.625rem] leading-9 font-semibold tracking-tight">
           Bem-vindo de volta
         </h2>
-        <p className="text-muted-foreground mt-1 text-sm">
+        <p className="text-muted-foreground mt-1.5 text-sm">
           Entre para acompanhar suas finanças.
         </p>
       </div>
@@ -54,20 +54,14 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
 
       {state.error && (
         <p
-          className="bg-destructive/10 text-destructive rounded-lg px-3 py-2 text-sm"
+          className="bg-destructive/10 text-destructive rounded-md px-3 py-2 text-sm"
           role="alert"
         >
           {state.error}
         </p>
       )}
 
-      <Button
-        type="submit"
-        variant="brand"
-        size="lg"
-        className="w-full"
-        disabled={isPending}
-      >
+      <Button type="submit" size="lg" className="w-full" disabled={isPending}>
         {isPending && <Loader2 className="animate-spin" />}
         Entrar
       </Button>

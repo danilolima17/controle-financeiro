@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { deleteTransaction } from "@/lib/actions/transactions";
@@ -45,36 +45,37 @@ export function TransactionItem({
   const pair = colorPair(transaction.category?.color ?? "#2a78d6");
 
   return (
-    <li className="hover:bg-accent/50 flex items-center gap-2.5 rounded-xl px-1 py-2.5 transition-colors sm:gap-3 sm:px-2">
+    <li className="group hover:bg-secondary/60 flex items-center gap-3 rounded-md px-2 py-2 transition-colors duration-150">
+      {/* Fundo tingido em vez de cor cheia: a lista fica calma e a cor
+          continua identificando a categoria. */}
       <span
-        className="flex size-9 shrink-0 items-center justify-center rounded-xl text-white [background:var(--dot-light)] dark:[background:var(--dot-dark)] sm:size-10"
+        className="flex size-9 shrink-0 items-center justify-center rounded-full [background:color-mix(in_oklab,var(--dot)_13%,transparent)] [color:var(--dot)] dark:[background:color-mix(in_oklab,var(--dot-dark)_22%,transparent)] dark:[color:var(--dot-dark)]"
         style={
           {
-            "--dot-light": pair.light,
+            "--dot": pair.light,
             "--dot-dark": pair.dark,
           } as React.CSSProperties
         }
       >
         <CategoryIcon
           name={transaction.category?.icon ?? "tag"}
-          className="size-4 sm:size-[18px]"
+          className="size-[17px]"
         />
       </span>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">
-          {transaction.description}
-        </p>
-        <p className="text-muted-foreground truncate text-xs">
+        <p className="truncate text-sm font-medium">{transaction.description}</p>
+        <p className="text-muted-foreground truncate text-[0.8125rem]">
           {transaction.category?.name ?? "Sem categoria"}
           {showDate && ` · ${formatShortDate(transaction.occurred_on)}`}
         </p>
       </div>
 
+      {/* Só a receita ganha cor; a despesa usa o sinal e a tinta normal. */}
       <span
         className={cn(
-          "tabular shrink-0 text-sm font-semibold",
-          isIncome ? "text-income" : "text-expense"
+          "numeric shrink-0 text-sm font-medium",
+          isIncome && "text-income"
         )}
       >
         {isIncome ? "+" : "−"}
@@ -93,9 +94,9 @@ export function TransactionItem({
           <Button
             variant="ghost"
             size="icon-sm"
-            className="text-muted-foreground size-7 shrink-0 sm:size-8"
+            className="text-faint-foreground hover:text-foreground size-7 shrink-0"
           >
-            <MoreVertical className="size-4" />
+            <MoreHorizontal className="size-4" />
             <span className="sr-only">Ações da transação</span>
           </Button>
         </DropdownMenuTrigger>
@@ -131,7 +132,7 @@ export function TransactionItem({
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               disabled={isDeleting}
-              className="bg-destructive hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:brightness-110"
               onClick={(event) => {
                 event.preventDefault();
                 startDelete(async () => {

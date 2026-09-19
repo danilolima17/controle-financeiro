@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
 
 import { deleteCategory } from "@/lib/actions/categories";
 import { colorPair } from "@/lib/palette";
 import type { Category } from "@/lib/types";
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +29,7 @@ import { Progress } from "@/components/ui/progress";
 import { CategoryIcon } from "@/components/category-icon";
 import { CategoryDialog } from "@/components/categories/category-dialog";
 
-export function CategoryCard({
+export function CategoryRow({
   category,
   spent,
 }: {
@@ -42,29 +42,36 @@ export function CategoryCard({
 
   const pair = colorPair(category.color);
   const budget = category.monthly_budget ? Number(category.monthly_budget) : null;
+  const ratio = budget ? spent / budget : 0;
   const exceeded = budget !== null && spent > budget;
 
   return (
-    <div className="bg-card flex flex-col gap-3 rounded-2xl border p-4">
+    <li className="px-4 py-3">
       <div className="flex items-center gap-3">
         <span
-          className="flex size-10 shrink-0 items-center justify-center rounded-xl text-white [background:var(--c-light)] dark:[background:var(--c-dark)]"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full [background:color-mix(in_oklab,var(--dot)_13%,transparent)] [color:var(--dot)] dark:[background:color-mix(in_oklab,var(--dot-dark)_22%,transparent)] dark:[color:var(--dot-dark)]"
           style={
             {
-              "--c-light": pair.light,
-              "--c-dark": pair.dark,
+              "--dot": pair.light,
+              "--dot-dark": pair.dark,
             } as React.CSSProperties
           }
         >
-          <CategoryIcon name={category.icon} className="size-[18px]" />
+          <CategoryIcon name={category.icon} className="size-[17px]" />
         </span>
 
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{category.name}</p>
-          <p className="tabular text-muted-foreground text-xs">
-            {formatCurrency(spent)} neste mês
+          <p className="text-muted-foreground truncate text-[0.8125rem]">
+            {budget
+              ? `Limite de ${formatCurrency(budget)}`
+              : "Sem limite definido"}
           </p>
         </div>
+
+        <span className="numeric shrink-0 text-sm font-medium">
+          {formatCurrency(spent)}
+        </span>
 
         <CategoryDialog
           category={category}
@@ -77,9 +84,9 @@ export function CategoryCard({
             <Button
               variant="ghost"
               size="icon-sm"
-              className="text-muted-foreground shrink-0"
+              className="text-faint-foreground hover:text-foreground size-7 shrink-0"
             >
-              <MoreVertical className="size-4" />
+              <MoreHorizontal className="size-4" />
               <span className="sr-only">Ações da categoria</span>
             </Button>
           </DropdownMenuTrigger>
@@ -104,19 +111,24 @@ export function CategoryCard({
       </div>
 
       {budget !== null && (
-        <div className="flex flex-col gap-1.5">
+        <div className="mt-2.5 flex items-center gap-2.5">
           <Progress
-            value={Math.min((spent / budget) * 100, 100)}
+            value={Math.min(ratio * 100, 100)}
+            className="h-1.5"
+            aria-label={`${Math.round(ratio * 100)}% do limite`}
             indicatorStyle={{
               background: exceeded ? "var(--expense)" : pair.light,
             }}
           />
-          <p className="text-muted-foreground text-xs">
-            {exceeded ? "Estourou o limite de " : "Limite de "}
-            <span className="tabular font-medium">
-              {formatCurrency(budget)}
-            </span>
-          </p>
+          <span
+            className={cn(
+              "numeric shrink-0 text-xs",
+              exceeded ? "text-expense font-medium" : "text-faint-foreground"
+            )}
+          >
+            {exceeded && <TriangleAlert className="mr-1 inline size-3" />}
+            {Math.round(ratio * 100)}%
+          </span>
         </div>
       )}
 
@@ -125,15 +137,15 @@ export function CategoryCard({
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir categoria</AlertDialogTitle>
             <AlertDialogDescription>
-              &ldquo;{category.name}&rdquo; será removida e as transações ligadas
-              a ela ficarão sem categoria.
+              &ldquo;{category.name}&rdquo; será removida e as transações
+              ligadas a ela ficarão sem categoria.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               disabled={isDeleting}
-              className="bg-destructive hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:brightness-110"
               onClick={(event) => {
                 event.preventDefault();
                 startDelete(async () => {
@@ -148,6 +160,6 @@ export function CategoryCard({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </li>
   );
 }

@@ -100,6 +100,22 @@ const shortMonthFormatter = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "UTC",
 });
 
+const monthNameFormatter = new Intl.DateTimeFormat("pt-BR", {
+  month: "long",
+  timeZone: "UTC",
+});
+
+/** "agosto" — para comparações em texto corrido. */
+export function formatMonthName(monthKey: string) {
+  return monthNameFormatter.format(new Date(`${monthKey}-01T00:00:00Z`));
+}
+
+/** "set 2026" — versão curta para telas estreitas. */
+export function formatCompactMonth(monthKey: string) {
+  const [year] = monthKey.split("-");
+  return `${formatShortMonth(monthKey)} ${year}`;
+}
+
 export function formatShortMonth(monthKey: string) {
   return shortMonthFormatter
     .format(new Date(`${monthKey}-01T00:00:00Z`))

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Receipt } from "lucide-react";
 
 import { getCategories, getTransactions } from "@/lib/data/queries";
 import type { TransactionWithCategory } from "@/lib/types";
@@ -12,15 +12,24 @@ import {
   shiftMonth,
 } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   CategoryBreakdown,
   type CategorySlice,
 } from "@/components/charts/category-breakdown";
-import { MonthlyChart, type MonthlyPoint } from "@/components/charts/monthly-chart";
-import { BalanceHero } from "@/components/dashboard/balance-hero";
+import {
+  MonthlyChart,
+  type MonthlyPoint,
+} from "@/components/charts/monthly-chart";
+import { BalanceSummary } from "@/components/dashboard/balance-summary";
 import { BudgetHighlights } from "@/components/dashboard/budget-highlights";
-import { MonthSwitcher } from "@/components/dashboard/month-switcher";
 import { TransactionItem } from "@/components/transactions/transaction-item";
 
 export const metadata: Metadata = {
@@ -46,18 +55,17 @@ export default async function DashboardPage({
   const { from, to } = monthRange(monthKey);
   const chartStart = monthRange(shiftMonth(monthKey, -5)).from;
 
-  const [categories, monthTransactions, historyTransactions] = await Promise.all(
-    [
+  const [categories, monthTransactions, historyTransactions] =
+    await Promise.all([
       getCategories(),
       getTransactions({ from, to }),
       getTransactions({ from: chartStart, to }),
-    ]
-  );
+    ]);
 
   const income = sumBy(monthTransactions, "income");
   const expense = sumBy(monthTransactions, "expense");
 
-  // Série dos últimos 6 meses
+  // Série dos últimos 6 meses, já disponível para o comparativo do saldo.
   const series: MonthlyPoint[] = Array.from({ length: 6 }, (_, index) => {
     const key = shiftMonth(monthKey, index - 5);
     const inMonth = historyTransactions.filter((transaction) =>
@@ -69,6 +77,11 @@ export default async function DashboardPage({
       expense: sumBy(inMonth, "expense"),
     };
   });
+
+  const previous = series[series.length - 2];
+  const previousBalance = previous
+    ? previous.income - previous.expense
+    : null;
 
   // Despesas por categoria no mês
   const totals = new Map<string, CategorySlice>();
@@ -105,19 +118,20 @@ export default async function DashboardPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <MonthSwitcher monthKey={monthKey} basePath="/dashboard" />
+      <PageHeader title="Início" />
 
-      <BalanceHero
-        balance={income - expense}
+      <BalanceSummary
+        monthKey={monthKey}
         income={income}
         expense={expense}
+        previousBalance={previousBalance}
       />
 
       <BudgetHighlights categories={categories} slices={slices} />
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Últimos 6 meses</CardTitle>
+          <CardTitle>Receitas e despesas</CardTitle>
         </CardHeader>
         <CardContent>
           <MonthlyChart data={series} />
@@ -126,7 +140,7 @@ export default async function DashboardPage({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Gastos por categoria</CardTitle>
+          <CardTitle>Gastos por categoria</CardTitle>
         </CardHeader>
         <CardContent>
           <CategoryBreakdown slices={topSlices} />
@@ -134,27 +148,22 @@ export default async function DashboardPage({
       </Card>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base">Transações recentes</CardTitle>
-          <Button variant="ghost" size="sm" asChild>
+        <CardHeader>
+          <CardTitle>Transações recentes</CardTitle>
+          <Button variant="link" size="sm" asChild>
             <Link href={`/transacoes?mes=${monthKey}`}>
               Ver todas
               <ArrowRight />
             </Link>
           </Button>
         </CardHeader>
-        <CardContent>
+        <CardContent className={recent.length === 0 ? "px-0 pb-0" : "px-2"}>
           {recent.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 py-8 text-center">
-              <span className="bg-accent text-primary flex size-12 items-center justify-center rounded-2xl">
-                <Sparkles className="size-5" />
-              </span>
-              <p className="text-muted-foreground text-sm">
-                Nenhuma transação neste mês ainda.
-                <br />
-                Toque no + para registrar a primeira.
-              </p>
-            </div>
+            <EmptyState
+              icon={Receipt}
+              title="Nenhuma transação neste mês"
+              description="Toque no botão + para registrar a primeira."
+            />
           ) : (
             <ul className="flex flex-col">
               {recent.map((transaction) => (

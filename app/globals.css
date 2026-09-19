@@ -3,88 +3,98 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+  Sistema visual: base neutra com um único acento (violeta). A cor é usada
+  para ação e estado, nunca como decoração — o que carrega a hierarquia é
+  tipografia, espaçamento e superfície.
+*/
 :root {
-  --radius: 1rem;
+  --radius: 0.875rem;
 
   /* Superfícies */
-  --background: oklch(0.985 0.006 300);
-  --foreground: oklch(0.19 0.02 285);
+  --background: oklch(0.982 0.002 285);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.19 0.02 285);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.19 0.02 285);
+  --surface-sunken: oklch(0.962 0.003 285);
 
-  /* Marca: violeta */
-  --primary: oklch(0.54 0.245 293);
-  --primary-foreground: oklch(0.99 0.005 300);
-  --brand-from: oklch(0.55 0.25 295);
-  --brand-via: oklch(0.52 0.24 282);
-  --brand-to: oklch(0.6 0.2 220);
+  /* Tinta */
+  --foreground: oklch(0.185 0.008 285);
+  --card-foreground: oklch(0.185 0.008 285);
+  --popover-foreground: oklch(0.185 0.008 285);
+  --muted-foreground: oklch(0.545 0.012 285);
+  --faint-foreground: oklch(0.66 0.01 285);
 
-  --secondary: oklch(0.96 0.012 300);
-  --secondary-foreground: oklch(0.26 0.03 288);
-  --muted: oklch(0.965 0.01 300);
-  --muted-foreground: oklch(0.52 0.025 288);
-  --accent: oklch(0.955 0.025 300);
-  --accent-foreground: oklch(0.35 0.12 293);
+  /* Acento */
+  --primary: oklch(0.53 0.235 293);
+  --primary-foreground: oklch(0.99 0 0);
+  --primary-hover: oklch(0.48 0.225 293);
+  --accent: oklch(0.955 0.015 293);
+  --accent-foreground: oklch(0.42 0.17 293);
 
-  --destructive: oklch(0.58 0.235 18);
+  --secondary: oklch(0.963 0.003 285);
+  --secondary-foreground: oklch(0.3 0.012 285);
+  --muted: oklch(0.966 0.003 285);
+
+  --destructive: oklch(0.575 0.22 22);
   --destructive-foreground: oklch(0.99 0 0);
 
-  /* Semântica financeira (validada para daltonismo e contraste) */
+  /* Semântica financeira — validada para daltonismo e contraste */
   --income: #0d9488;
-  --income-soft: oklch(0.95 0.04 180);
+  --income-surface: oklch(0.965 0.032 180);
   --expense: #e11d48;
-  --expense-soft: oklch(0.96 0.03 15);
+  --expense-surface: oklch(0.967 0.024 12);
 
-  --border: oklch(0.92 0.012 300);
-  --input: oklch(0.92 0.012 300);
-  --ring: oklch(0.54 0.245 293);
+  --border: oklch(0.917 0.004 285);
+  --border-strong: oklch(0.86 0.006 285);
+  --input: oklch(0.9 0.005 285);
+  --ring: oklch(0.53 0.235 293);
 
-  /* Séries de gráfico */
+  /* Gráficos */
   --chart-income: #0d9488;
   --chart-expense: #e11d48;
-  --chart-grid: #e6e4ec;
-  --chart-axis: #8b8a97;
+  --chart-grid: oklch(0.932 0.003 285);
+  --chart-axis: oklch(0.6 0.01 285);
 }
 
 .dark {
-  --background: oklch(0.145 0.015 285);
-  --foreground: oklch(0.97 0.005 300);
-  --card: oklch(0.185 0.018 287);
-  --card-foreground: oklch(0.97 0.005 300);
-  --popover: oklch(0.2 0.018 287);
-  --popover-foreground: oklch(0.97 0.005 300);
+  --background: oklch(0.145 0.008 285);
+  --card: oklch(0.187 0.009 285);
+  --popover: oklch(0.216 0.011 285);
+  --surface-sunken: oklch(0.163 0.008 285);
 
-  --primary: oklch(0.72 0.18 295);
-  --primary-foreground: oklch(0.16 0.03 288);
-  --brand-from: oklch(0.65 0.23 295);
-  --brand-via: oklch(0.58 0.22 282);
-  --brand-to: oklch(0.62 0.17 222);
+  --foreground: oklch(0.973 0.003 285);
+  --card-foreground: oklch(0.973 0.003 285);
+  --popover-foreground: oklch(0.973 0.003 285);
+  --muted-foreground: oklch(0.705 0.012 285);
+  --faint-foreground: oklch(0.585 0.012 285);
 
-  --secondary: oklch(0.26 0.022 288);
-  --secondary-foreground: oklch(0.97 0.005 300);
-  --muted: oklch(0.25 0.02 288);
-  --muted-foreground: oklch(0.71 0.02 295);
-  --accent: oklch(0.29 0.04 292);
-  --accent-foreground: oklch(0.95 0.02 300);
+  --primary: oklch(0.7 0.19 294);
+  --primary-foreground: oklch(0.16 0.02 290);
+  --primary-hover: oklch(0.755 0.17 294);
+  --accent: oklch(0.28 0.045 293);
+  --accent-foreground: oklch(0.86 0.1 293);
 
-  --destructive: oklch(0.65 0.22 17);
-  --destructive-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.253 0.009 285);
+  --secondary-foreground: oklch(0.96 0.003 285);
+  --muted: oklch(0.243 0.008 285);
+
+  --destructive: oklch(0.65 0.21 20);
+  --destructive-foreground: oklch(0.985 0 0);
 
   --income: #14b8a6;
-  --income-soft: oklch(0.32 0.06 180);
+  --income-surface: oklch(0.29 0.05 182);
   --expense: #fb7185;
-  --expense-soft: oklch(0.33 0.07 15);
+  --expense-surface: oklch(0.3 0.062 14);
 
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.72 0.18 295);
+  --border: oklch(1 0 0 / 10%);
+  --border-strong: oklch(1 0 0 / 18%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.7 0.19 294);
 
   --chart-income: #0d9488;
   --chart-expense: #f43f5e;
-  --chart-grid: #2c2c38;
-  --chart-axis: #8b8a97;
+  --chart-grid: oklch(1 0 0 / 8%);
+  --chart-axis: oklch(0.6 0.012 285);
 }
 
 @theme inline {
@@ -92,40 +102,46 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+  --color-surface-sunken: var(--surface-sunken);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-brand-from: var(--brand-from);
-  --color-brand-via: var(--brand-via);
-  --color-brand-to: var(--brand-to);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-faint-foreground: var(--faint-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+
   --color-income: var(--income);
-  --color-income-soft: var(--income-soft);
+  --color-income-surface: var(--income-surface);
   --color-expense: var(--expense);
-  --color-expense-soft: var(--expense-soft);
+  --color-expense-surface: var(--expense-surface);
+
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --radius-sm: calc(var(--radius) - 8px);
-  --radius-md: calc(var(--radius) - 4px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 12px);
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.125rem;
+  --radius-2xl: 1.375rem;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
 
   html {
@@ -134,66 +150,76 @@
 
   body {
     @apply bg-background text-foreground;
-    /* Evita que o "puxar para atualizar" do navegador quebre a sensação de app */
     overscroll-behavior-y: none;
+    text-rendering: optimizeLegibility;
   }
 
-  /* Tipografia de números em colunas alinhadas */
-  .tabular {
-    font-variant-numeric: tabular-nums;
+  /* Um único padrão de foco em todo o app. Usa `outline` (e não `ring`) para
+     não brigar com os componentes que desenham o próprio anel, como o Input. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Títulos pedem tracking negativo; textos corridos, não. */
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.015em;
   }
 }
 
 @layer utilities {
-  .bg-brand-gradient {
-    background-image: linear-gradient(
-      135deg,
-      var(--brand-from) 0%,
-      var(--brand-via) 50%,
-      var(--brand-to) 100%
-    );
+  /* Números em coluna precisam alinhar e não podem "dançar" ao atualizar. */
+  .numeric {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
   }
 
-  .text-brand-gradient {
-    background-image: linear-gradient(
-      120deg,
-      var(--brand-from) 0%,
-      var(--brand-via) 60%,
-      var(--brand-to) 100%
-    );
-    background-clip: text;
-    color: transparent;
+  /* Valor de destaque (saldo do mês, total de um cartão). */
+  .text-display {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
   }
 
-  /* Altura máxima da folha. `dvh` acompanha a barra do navegador que aparece
-     e some no celular; `vh` fica como reserva para navegadores sem suporte. */
+  /* Rótulo de seção: pequeno, espaçado, discreto. */
+  .text-label {
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
   .max-h-sheet {
     max-height: 90vh;
     max-height: 90dvh;
   }
 
-  /* Recortes de área segura para o visual de app instalado */
   .pt-safe {
     padding-top: env(safe-area-inset-top);
   }
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }
-  .mb-safe {
-    margin-bottom: env(safe-area-inset-bottom);
-  }
-  .bottom-safe {
-    bottom: env(safe-area-inset-bottom);
-  }
-  .h-nav-safe {
-    height: calc(4.25rem + env(safe-area-inset-bottom));
-  }
 }
 
-/* Barras de rolagem discretas */
 @supports (scrollbar-width: thin) {
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+}
+
+/* Movimento é feedback, não enfeite: quem pediu menos animação recebe menos. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Receipt } from "lucide-react";
+import { Receipt, SearchX } from "lucide-react";
 
 import { getCategories, getTransactions } from "@/lib/data/queries";
 import {
+  cn,
   currentMonthKey,
   formatCurrency,
   isValidMonthKey,
   monthRange,
 } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MonthSwitcher } from "@/components/dashboard/month-switcher";
 import { TransactionFilters } from "@/components/transactions/transaction-filters";
@@ -26,12 +28,14 @@ export default async function TransactionsPage({
   const asString = (value: string | string[] | undefined) =>
     typeof value === "string" ? value : undefined;
 
-  const monthKey = isValidMonthKey(asString(params.mes))
-    ? asString(params.mes)!
-    : currentMonthKey();
+  const requested = asString(params.mes);
+  const monthKey = isValidMonthKey(requested) ? requested : currentMonthKey();
   const type = asString(params.tipo);
   const categoryId = asString(params.categoria);
   const search = asString(params.q);
+  const isFiltered = Boolean(
+    search || (type && type !== "todos") || (categoryId && categoryId !== "todas")
+  );
 
   const { from, to } = monthRange(monthKey);
 
@@ -55,49 +59,41 @@ export default async function TransactionsPage({
 
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="text-2xl font-semibold tracking-tight">Transações</h1>
+      <PageHeader
+        title="Transações"
+        description={`${transactions.length} ${
+          transactions.length === 1 ? "lançamento" : "lançamentos"
+        } no período`}
+      />
 
       <MonthSwitcher monthKey={monthKey} basePath="/transacoes" />
 
-      <Suspense fallback={<Skeleton className="h-28 w-full" />}>
+      <Suspense fallback={<Skeleton className="h-[6.5rem] w-full rounded-lg" />}>
         <TransactionFilters categories={categories} />
       </Suspense>
 
-      {/* Um card só, com divisores: três cards separados não cabem lado a
-          lado numa tela de 320px sem cortar os valores. */}
-      <Card className="gap-0 py-3">
-        <CardContent className="grid grid-cols-3 divide-x px-0 text-center">
-          <div className="min-w-0 px-2">
-            <p className="text-muted-foreground text-xs">Entradas</p>
-            <p className="tabular text-income truncate text-sm font-semibold">
-              {formatCurrency(income)}
-            </p>
-          </div>
-          <div className="min-w-0 px-2">
-            <p className="text-muted-foreground text-xs">Saídas</p>
-            <p className="tabular text-expense truncate text-sm font-semibold">
-              {formatCurrency(expense)}
-            </p>
-          </div>
-          <div className="min-w-0 px-2">
-            <p className="text-muted-foreground text-xs">Saldo</p>
-            <p className="tabular truncate text-sm font-semibold">
-              {formatCurrency(income - expense)}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Um card só com divisores: três cards lado a lado não cabem em 320px. */}
+      <div className="bg-card grid grid-cols-3 divide-x rounded-lg border">
+        <Figure label="Entradas" value={income} tone="income" />
+        <Figure label="Saídas" value={expense} tone="expense" />
+        <Figure label="Saldo" value={income - expense} />
+      </div>
 
       {transactions.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed py-14 text-center">
-          <span className="bg-accent text-primary flex size-12 items-center justify-center rounded-2xl">
-            <Receipt className="size-5" />
-          </span>
-          <p className="text-muted-foreground text-sm">
-            Nenhuma transação encontrada
-            <br />
-            para os filtros deste mês.
-          </p>
+        <div className="bg-card rounded-lg border">
+          {isFiltered ? (
+            <EmptyState
+              icon={SearchX}
+              title="Nada encontrado"
+              description="Nenhuma transação corresponde aos filtros deste mês."
+            />
+          ) : (
+            <EmptyState
+              icon={Receipt}
+              title="Nenhuma transação neste mês"
+              description="Toque no botão + para registrar a primeira."
+            />
+          )}
         </div>
       ) : (
         <TransactionGroups
@@ -105,6 +101,31 @@ export default async function TransactionsPage({
           categories={categories}
         />
       )}
+    </div>
+  );
+}
+
+function Figure({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number;
+  tone?: "income" | "expense";
+}) {
+  return (
+    <div className="min-w-0 px-3 py-3 text-center">
+      <p className="text-muted-foreground truncate text-xs">{label}</p>
+      <p
+        className={cn(
+          "numeric mt-0.5 truncate text-sm font-semibold",
+          tone === "income" && "text-income",
+          tone === "expense" && "text-expense"
+        )}
+      >
+        {formatCurrency(value)}
+      </p>
     </div>
   );
 }

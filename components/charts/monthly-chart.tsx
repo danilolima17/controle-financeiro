@@ -36,31 +36,32 @@ function ChartTooltip({
 
   const income = payload.find((item) => item.dataKey === "income")?.value ?? 0;
   const expense = payload.find((item) => item.dataKey === "expense")?.value ?? 0;
-  const balance = income - expense;
 
   return (
-    <div className="bg-popover text-popover-foreground rounded-xl border p-3 text-xs shadow-lg">
-      <p className="mb-2 font-medium">{label}</p>
-      <dl className="tabular grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1.5">
-        <dt className="flex items-center gap-1.5 text-muted-foreground">
+    <div className="bg-popover text-popover-foreground min-w-44 rounded-md border p-2.5 text-xs shadow-md">
+      <p className="mb-2 font-medium capitalize">{label}</p>
+      <dl className="numeric grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1.5">
+        <dt className="text-muted-foreground flex items-center gap-1.5">
           <span
-            className="size-2 rounded-full"
+            className="size-1.5 rounded-full"
             style={{ backgroundColor: "var(--chart-income)" }}
           />
           Receitas
         </dt>
-        <dd className="text-right font-medium">{formatCurrency(income)}</dd>
-        <dt className="flex items-center gap-1.5 text-muted-foreground">
+        <dd className="text-right">{formatCurrency(income)}</dd>
+
+        <dt className="text-muted-foreground flex items-center gap-1.5">
           <span
-            className="size-2 rounded-full"
+            className="size-1.5 rounded-full"
             style={{ backgroundColor: "var(--chart-expense)" }}
           />
           Despesas
         </dt>
-        <dd className="text-right font-medium">{formatCurrency(expense)}</dd>
+        <dd className="text-right">{formatCurrency(expense)}</dd>
+
         <dt className="text-muted-foreground border-t pt-1.5">Saldo</dt>
-        <dd className="border-t pt-1.5 text-right font-semibold">
-          {formatCurrency(balance)}
+        <dd className="border-t pt-1.5 text-right font-medium">
+          {formatCurrency(income - expense)}
         </dd>
       </dl>
     </div>
@@ -72,68 +73,65 @@ export function MonthlyChart({ data }: { data: MonthlyPoint[] }) {
 
   if (!hasData) {
     return (
-      <div className="text-muted-foreground flex h-56 items-center justify-center text-center text-sm">
-        Registre transações para ver a evolução dos seus meses.
-      </div>
+      <p className="text-muted-foreground flex h-48 items-center justify-center text-center text-sm">
+        Registre transações para acompanhar a evolução dos meses.
+      </p>
     );
   }
 
   return (
     <div>
-      {/* Legenda: identidade nunca depende só da cor */}
-      <div className="mb-4 flex items-center gap-4 text-xs">
+      {/* Legenda sempre presente: identidade nunca depende só da cor. */}
+      <div className="mb-5 flex items-center gap-4 text-[0.8125rem]">
         <span className="text-muted-foreground flex items-center gap-1.5">
           <span
-            className="size-2.5 rounded-full"
+            className="size-2 rounded-full"
             style={{ backgroundColor: "var(--chart-income)" }}
           />
           Receitas
         </span>
         <span className="text-muted-foreground flex items-center gap-1.5">
           <span
-            className="size-2.5 rounded-full"
+            className="size-2 rounded-full"
             style={{ backgroundColor: "var(--chart-expense)" }}
           />
           Despesas
         </span>
       </div>
 
-      <ResponsiveContainer width="100%" height={220}>
-        <BarChart data={data} barGap={2} margin={{ left: -18, right: 4 }}>
-          <CartesianGrid
-            vertical={false}
-            stroke="var(--chart-grid)"
-            strokeWidth={1}
-          />
+      <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={data} barGap={2} margin={{ left: -20, right: 2 }}>
+          <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
           <XAxis
             dataKey="label"
             tickLine={false}
             axisLine={false}
-            tickMargin={10}
-            tick={{ fill: "var(--chart-axis)", fontSize: 12 }}
+            tickMargin={12}
+            tick={{ fill: "var(--chart-axis)", fontSize: 11 }}
           />
           <YAxis
             tickLine={false}
             axisLine={false}
-            width={56}
+            width={52}
+            tickCount={4}
             tickFormatter={compact}
             tick={{ fill: "var(--chart-axis)", fontSize: 11 }}
           />
           <Tooltip
-            cursor={{ fill: "var(--chart-grid)", fillOpacity: 0.35 }}
+            cursor={{ fill: "var(--chart-grid)", fillOpacity: 0.5 }}
             content={<ChartTooltip />}
           />
           <Bar
             dataKey="income"
             fill="var(--chart-income)"
-            radius={[4, 4, 0, 0]}
-            maxBarSize={18}
+            radius={[3, 3, 0, 0]}
+            maxBarSize={14}
           />
           <Bar
             dataKey="expense"
             fill="var(--chart-expense)"
-            radius={[4, 4, 0, 0]}
-            maxBarSize={18}
+            radius={[3, 3, 0, 0]}
+            maxBarSize={14}
           />
         </BarChart>
       </ResponsiveContainer>

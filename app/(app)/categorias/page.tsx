@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Plus } from "lucide-react";
+import { Plus, Shapes } from "lucide-react";
 
 import { getCategories, getTransactions } from "@/lib/data/queries";
-import { currentMonthKey, monthRange } from "@/lib/utils";
+import { currentMonthKey, formatMonthLabel, monthRange } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CategoryCard } from "@/components/categories/category-card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader, SectionHeader } from "@/components/ui/page-header";
 import { CategoryDialog } from "@/components/categories/category-dialog";
+import { CategoryRow } from "@/components/categories/category-row";
 
 export const metadata: Metadata = {
   title: "Categorias — Controle Financeiro",
@@ -44,43 +46,51 @@ export default async function CategoriesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">Categorias</h1>
-        <CategoryDialog
-          trigger={
-            <Button variant="brand" size="sm">
-              <Plus />
-              Nova
-            </Button>
-          }
-        />
-      </div>
+      <PageHeader
+        title="Categorias"
+        description={`Valores de ${formatMonthLabel(monthKey).toLowerCase()}`}
+        action={
+          <CategoryDialog
+            trigger={
+              <Button size="sm">
+                <Plus />
+                Nova
+              </Button>
+            }
+          />
+        }
+      />
 
       {groups.map((group) => (
-        <section key={group.type} className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-              {group.title}
-            </h2>
-            <span className="text-muted-foreground text-xs">
-              {group.items.length}
-            </span>
-          </div>
+        <section key={group.type} className="flex flex-col gap-2.5">
+          <SectionHeader
+            title={group.title}
+            action={
+              <span className="text-faint-foreground numeric text-xs">
+                {group.items.length}
+              </span>
+            }
+          />
 
           {group.items.length === 0 ? (
-            <p className="text-muted-foreground rounded-2xl border border-dashed py-8 text-center text-sm">
-              Nenhuma categoria de {group.title.toLowerCase()}.
-            </p>
+            <div className="bg-card rounded-lg border">
+              <EmptyState
+                icon={Shapes}
+                title={`Nenhuma categoria de ${group.title.toLowerCase()}`}
+                description="Crie uma para classificar seus lançamentos."
+                className="py-8"
+              />
+            </div>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <ul className="bg-card divide-border divide-y overflow-hidden rounded-lg border">
               {group.items.map((category) => (
-                <CategoryCard
+                <CategoryRow
                   key={category.id}
                   category={category}
                   spent={spentByCategory.get(category.id) ?? 0}
                 />
               ))}
-            </div>
+            </ul>
           )}
         </section>
       ))}

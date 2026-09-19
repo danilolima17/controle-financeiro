@@ -17,7 +17,7 @@ export function TransactionGroups({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       {[...groups.entries()].map(([day, items]) => {
         const dayTotal = items.reduce(
           (sum, item) =>
@@ -27,16 +27,17 @@ export function TransactionGroups({
 
         return (
           <section key={day}>
-            <div className="mb-1 flex items-baseline justify-between px-2">
-              <h3 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+            <div className="mb-1.5 flex items-baseline justify-between gap-3 px-2">
+              <h3 className="text-label text-muted-foreground truncate">
                 {formatDayHeading(day)}
               </h3>
-              <span className="tabular text-muted-foreground text-xs">
+              <span className="numeric text-faint-foreground shrink-0 text-xs">
                 {dayTotal >= 0 ? "+" : "−"}
                 {formatCurrency(Math.abs(dayTotal))}
               </span>
             </div>
-            <ul className="flex flex-col">
+
+            <ul className="bg-card flex flex-col rounded-lg border p-1">
               {items.map((transaction) => (
                 <TransactionItem
                   key={transaction.id}
